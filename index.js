@@ -217,6 +217,7 @@ function postMessage(data, cont) {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Content-Length': Buffer.byteLength(post_data),
       'Referer': `http://jbbs.shitaraba.net/bbs/read.cgi/${data.DIR}/${data.BBS}/${data.KEY}/`,
+      'User-Agent': 'tensaikun',
     }
   };
 
