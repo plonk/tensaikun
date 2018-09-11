@@ -8,6 +8,13 @@ var $Stats = { received: 0, sent: 0, errored: 0, filtered: 0 };
 var $ThreadInfo = null;
 var $DequeueTimeoutId = null;
 var $Manager = null;
+const VERSION_STRING = "0.1.0";
+
+function showAboutDialog() {
+  alert("ニココメ！てんさいくん ver " + VERSION_STRING + "\n" +
+        "使用ライブラリ:\n" +
+        "iconv-lite, jquery, nicolive-api\n");
+}
 
 function notifyQueueUpdate() {
   $('#queue-length').text(""+$CommentQueue.length);
@@ -187,9 +194,35 @@ var http = require('http');
 var fs = require('fs');
 const iconv = require('iconv-lite');
 
+function htmlEscape(ch) {
+  return iconv.encode("&#" + ch.codePointAt(0) + ";", "ascii");
+}
+
 // String -> Buffer
-function euc_jp(string) {
-  return iconv.encode(string, "euc-jp");
+// JS文字列をEUC-JPでエンコードしてBufferで返す。
+// ブラウザがやるような、EUC-JPで表現不可能な文字のエスケープも行う。
+function euc_jp(str) {
+  var chars = Array.from(str);
+  var list = [];
+  for (var ch of chars) {
+    if (ch.length === 2) {
+      list.push(htmlEscape(ch));
+    } else {
+      var b = iconv.encode(ch, "euc-jp");
+      if (b.length === 3) {
+        list.push(htmlEscape(ch));
+      } else if (b.length === 2) {
+        list.push(b);
+      } else if (b.length === 1) {
+        if (b[0] === 0x3f && ch !== '?') {
+          list.push(htmlEscape(ch));
+        } else {
+          list.push(b);
+        }
+      } else { throw new Error(); }
+    }
+  }
+  return Buffer.concat(list);
 }
 
 function esc(buffer) {
@@ -223,7 +256,7 @@ function postMessage(data, cont) {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Content-Length': Buffer.byteLength(post_data),
       'Referer': `http://jbbs.shitaraba.net/bbs/read.cgi/${data.DIR}/${data.BBS}/${data.KEY}/`,
-      'User-Agent': 'tensaikun',
+      'User-Agent': 'tensaikun/' + VERSION_STRING,
     }
   };
 
