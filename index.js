@@ -52,6 +52,7 @@ function dequeueCommentAndPost() {
 
       // コマンドコメントをとばす。
       if (comment.text.match(/^\//)) {
+        console.log("filetered (command)", comment);
         $Stats.filtered += 1;
         notifyStatsUpdate();
         continue;
@@ -82,6 +83,7 @@ function dequeueCommentAndPost() {
       $DequeueTimeoutId = setTimeout(dequeueCommentAndPost, $PostInterval);
     });
   } else {
+    notifyQueueUpdate();
     $DequeueTimeoutId = setTimeout(dequeueCommentAndPost, $PostInterval);
   }
 }
@@ -131,7 +133,11 @@ function setRoomName(name) {
 
 function postResult(responseBody) {
   if (responseBody.match(/2ch_X:error/)) {
-    return "error";
+    if (responseBody.match(/多重書き込みです/)) {
+      return "ratelimit";
+    } else {
+      return "error";
+    }
   } else if (responseBody.match(/書きこみました/)) {
     return "success";
   } else {
@@ -229,17 +235,23 @@ function postMessage(data, cont) {
     });
     res.on('end', function() {
       response_body = iconv.decode(Buffer.concat(chunks), "euc-jp");
+      console.log(response_body);
+
       var result = postResult(response_body)
       if (result === "success") {
         $Stats.sent += 1;
       } else if (result === "error") {
         $Stats.errored += 1;
+      } else if (result === "ratelimit") {
+        // リトライ
+        console.log("retrying ...");
+        setTimeout(function() { postMessage(data, cont); }, $PostInterval);
+        return;
       } else {
         console.log("Weird result (counting as error): " + result);
         $Stats.errored += 1;
       }
       notifyStatsUpdate();
-      console.log(response_body);
       cont();
     });
   });
@@ -260,13 +272,16 @@ function startListening(user, password, video) {
       setRoomName(manager.viewer.room.label);
 
       manager.viewer.connection.on('comment', (comment => {
-        $CommentQueue.push(comment);
-        notifyQueueUpdate();
+        if (comment.room.label === manager.viewer.room.label) {
+          $CommentQueue.push(comment);
+          notifyQueueUpdate();
 
-        $Stats.received += 1;
-        notifyStatsUpdate();
-
-        console.log("received", comment)
+          $Stats.received += 1;
+          notifyStatsUpdate();
+          console.log("received", comment)
+        } else {
+          console.log("discarded (different room)", comment)
+        }
       }));
       manager.viewer.connection.on('ejected', () => {
         alert('追い出されました');

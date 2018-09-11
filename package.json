@@ -4,11 +4,13 @@
   "description": "A program to copy Livenico comments over to Shitaraba.",
   "main": "main.js",
   "dependencies": {
-    "electron": "^2.0.8",
+    "asar": "^0.14.3",
     "jquery": "^3.3.1",
     "nicolive-api": "^0.7.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "electron": "^2.0.8"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
