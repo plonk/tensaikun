@@ -128,6 +128,8 @@ function onError() {
   $('#stop-button').prop('disabled', true)
   setLiveName("");
   setRoomName("");
+
+  alert("停止しました。");
 }
 
 function setLiveName(name) {
@@ -287,6 +289,11 @@ function postMessage(data, cont) {
       notifyStatsUpdate();
       cont();
     });
+  });
+
+  post_req.on('error', function(e) {
+    alert('投稿に失敗:' + e.message);
+    onError();
   });
 
   post_req.write(post_data);
