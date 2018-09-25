@@ -128,6 +128,7 @@ function onError() {
   $('#stop-button').prop('disabled', true)
   setLiveName("");
   setRoomName("");
+  setThreadTitle("");
 
   alert("停止しました。");
 }
@@ -138,6 +139,10 @@ function setLiveName(name) {
 
 function setRoomName(name) {
   $('#room-name').text(name);
+}
+
+function setThreadTitle(name) {
+  $('#shitaraba-thread-title').text(name);
 }
 
 function postResult(responseBody) {
@@ -180,9 +185,11 @@ $(function(){
       $('#start-button').prop('disabled', true);
       $('#stop-button').prop('disabled', false);
 
-      $DequeueTimeoutId = setTimeout(dequeueCommentAndPost, $PostInterval);
-      setStatus("動作中");
-      saveSettings();
+      getThreadTitle($ThreadInfo, function() {
+        $DequeueTimeoutId = setTimeout(dequeueCommentAndPost, $PostInterval);
+        setStatus("動作中");
+        saveSettings();
+      });
     } catch (e) {
       alert("エラー: " + e.message);
       onError();
@@ -269,7 +276,7 @@ function postMessage(data, cont) {
       chunks.push(new Buffer(chunk, 'binary'));
     });
     res.on('end', function() {
-      response_body = iconv.decode(Buffer.concat(chunks), "euc-jp");
+      var response_body = iconv.decode(Buffer.concat(chunks), "euc-jp");
       console.log(response_body);
 
       var result = postResult(response_body)
@@ -298,6 +305,34 @@ function postMessage(data, cont) {
 
   post_req.write(post_data);
   post_req.end();
+}
+
+function getThreadTitle(data, cont) {
+  var options = {
+    host: 'jbbs.shitaraba.net',
+    port: '80',
+    path: `/bbs/rawmode.cgi/${data.DIR}/${data.BBS}/${data.KEY}/1`,
+    method: 'GET',
+    headers: {
+      'User-Agent': 'tensaikun/' + VERSION_STRING,
+    }
+  };
+
+  var req = http.request(options, function(res){
+    var chunks = [];
+    res.setEncoding('binary');
+    res.on('data', function(chunk){
+      chunks.push(new Buffer(chunk, 'binary'));
+    });
+    res.on('end', function(){
+      var body = iconv.decode(Buffer.concat(chunks), "euc-jp");
+      var title = body.split('<>')[5];
+      setThreadTitle(title);
+      cont();
+    });
+  });
+
+  req.end();
 }
 
 // -----------------------------------------------------------------------------
