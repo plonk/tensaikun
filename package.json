@@ -1,6 +1,6 @@
 {
   "name": "tensaikun",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "A program to copy Livenico comments over to Shitaraba.",
   "main": "main.js",
   "dependencies": {

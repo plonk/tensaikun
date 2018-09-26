@@ -129,8 +129,6 @@ function onError() {
   setLiveName("");
   setRoomName("");
   setThreadTitle("");
-
-  alert("停止しました。");
 }
 
 function setLiveName(name) {
@@ -159,8 +157,28 @@ function postResult(responseBody) {
   }
 }
 
+function setLoginInfoVisibility(visible) {
+  if (visible) {
+    $('#login-info').show();
+    $('#hide-button').text("隠す");
+  } else {
+    $('#login-info').hide();
+    $('#hide-button').text("表示");
+  }
+}
+
 $(function(){
   restoreSettings();
+  $('#hide-button').on('click', function(){
+    if ($('#hide-button').text() == "隠す") {
+      setLoginInfoVisibility(false);
+    } else {
+      if (confirm("ニコニコ動画のログイン情報を表示します。")) {
+        setLoginInfoVisibility(true);
+      }
+    }
+  });
+  setLoginInfoVisibility($("#email-input").val()==="");
   setStatus("停止中");
   notifyQueueUpdate();
   notifyStatsUpdate();

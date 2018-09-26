@@ -14,7 +14,7 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function() {
-  mainWindow = new BrowserWindow({width: 320, height: 410});
+  mainWindow = new BrowserWindow({width: 320, height: 400});
   mainWindow.loadURL('file://' + __dirname + '/index.html');
 
   mainWindow.webContents.on('context-menu', (e, props) => {

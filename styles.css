@@ -5,3 +5,15 @@ input[type=url] {
 div {
     margin-top: 5px; margin-bottom: 5px;
 }
+
+label {
+    display: inline-block; width: 26mm; text-align: right
+}
+
+label.stat-label {
+    margin-right: 1em;
+}
+
+h4 {
+    margin-top: 12px; margin-bottom: 6px;
+}
