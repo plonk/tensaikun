@@ -8,7 +8,7 @@ var $Stats = { received: 0, sent: 0, errored: 0, filtered: 0 };
 var $ThreadInfo = null;
 var $DequeueTimeoutId = null;
 var $Manager = null;
-const VERSION_STRING = "0.2.0";
+const VERSION_STRING = "0.3.0";
 
 function showAboutDialog() {
   alert("ニココメ！てんさいくん ver " + VERSION_STRING + "\n" +
