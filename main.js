@@ -14,8 +14,13 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function() {
-  mainWindow = new BrowserWindow({width: 320, height: 400});
+  mainWindow = new BrowserWindow({width: 320, height: 400, show: false});
   mainWindow.loadURL('file://' + __dirname + '/index.html');
+  mainWindow.once('ready-to-show', () => {
+    var [w, h] = mainWindow.getSize();
+    mainWindow.setMinimumSize(w, h + 5);
+    mainWindow.show();
+  });
 
   mainWindow.webContents.on('context-menu', (e, props) => {
     const InputMenu = Menu.buildFromTemplate([{
