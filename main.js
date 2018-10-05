@@ -14,11 +14,15 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function() {
-  mainWindow = new BrowserWindow({width: 320, height: 400, show: false});
+  mainWindow = new BrowserWindow({width: 320, height: 475, show: false});
   mainWindow.loadURL('file://' + __dirname + '/index.html');
   mainWindow.once('ready-to-show', () => {
-    var [w, h] = mainWindow.getSize();
-    mainWindow.setMinimumSize(w, h + 5);
+    mainWindow.webContents.executeJavaScript('[localStorage.width, localStorage.height]', function (size) {
+      var [w, h] = size;
+      if (w && h) {
+        mainWindow.setSize(+w, +h);
+      }
+    });
     mainWindow.show();
   });
 
@@ -55,6 +59,10 @@ app.on('ready', function() {
 
   Menu.setApplicationMenu(menu);
 
+  mainWindow.on('close', function(){
+    var [w, h] = mainWindow.getSize();
+    mainWindow.webContents.executeJavaScript(`localStorage.width = ${w}; localStorage.height = ${h}`);
+  });
   mainWindow.on('closed', function() {
     mainWindow = null;
   });
