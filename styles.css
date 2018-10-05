@@ -17,3 +17,8 @@ label.stat-label {
 h4 {
     margin-top: 12px; margin-bottom: 6px;
 }
+
+div#stats-div > div {
+    overflow: hidden;
+    white-space: nowrap; text-overflow: ellipsis
+}
