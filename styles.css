@@ -6,11 +6,12 @@ div {
     margin-top: 5px; margin-bottom: 5px;
 }
 
-label {
+label.left-label {
     display: inline-block; width: 26mm; text-align: right
 }
 
 label.stat-label {
+    display: inline-block; width: 26mm; text-align: right
     margin-right: 1em;
 }
 

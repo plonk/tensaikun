@@ -47,11 +47,48 @@ function setThreadInfo(url) {
   }
 }
 
+function isAnonymous(comment) {
+  return comment.attr.anonymity === "1";
+}
+
+function getNickname(id) {
+  return new Promise(function(resolve, _reject) {
+    $.get(`http://seiga.nicovideo.jp/api/user/info?id=${id}`)
+      .done(function(data, textStatus, jqXHR) {
+        var result = document.evaluate("/response/user/nickname",
+                                       data, // context
+                                       null, // namespace resolver,
+                                       XPathResult.STRING_TYPE, // return type
+                                       null);
+        if (result.stringValue) {
+          resolve(result.stringValue);
+        } else {
+          // ユーザーIDをユーザー名として継続。
+          console.warn("エラー: XML文書の /response/user/nickname が空です。");
+          resolve(""+id);
+        }
+      })
+      .fail(function(jqXHR, textStatus, errorThrown) {
+        // ユーザーIDをユーザー名として継続。
+        console.warn(`ニコ動ユーザーID ${id} の名前の取得に失敗しました。`, errorThrown);
+        resolve(""+id);
+      });
+  });
+}
+
+async function formatComment(c) {
+  if (isAnonymous(c) || !$('#nickname-checkbox').prop('checked')) {
+    return c.text;
+  } else {
+    return `＠${await getNickname(c.attr.user_id)}\n` + c.text;
+  }
+}
+
 // $CommentQueue からコメントを取り出してしたらばに投稿する。
 function dequeueCommentAndPost() {
   $DequeueTimeoutId = null;
 
-  var messages = [];
+  var comments = [];
 
   while (true) {
     if ($CommentQueue.length > 0) {
@@ -64,30 +101,21 @@ function dequeueCommentAndPost() {
         notifyStatsUpdate();
         continue;
       } else {
-        messages.push(comment.text);
+        comments.push(comment);
       }
     } else {
       break;
     }
   }
 
-  if (messages.length > 0) {
-    var body;
+  if (comments.length > 0) {
+    Promise.all(comments.map(formatComment)).then(messages => {
+      var body = messages.join("\n\n");
 
-    if (messages.length === 1) {
-      body = messages[0];
-    } else {
-      var total = messages.length;
-      body = "";
-      for (var i = 0; i < messages.length; i++) {
-        //body += `[${i+1}/${total}] ${messages[i]}\n\n`;
-        body += `${messages[i]}\n\n`;
-      }
-    }
-
-    postMessage(makeRes(body), function() { // and then ...
-      notifyQueueUpdate();
-      $DequeueTimeoutId = setTimeout(dequeueCommentAndPost, $PostInterval);
+      postMessage(makeRes(body), function() { // and then ...
+        notifyQueueUpdate();
+        $DequeueTimeoutId = setTimeout(dequeueCommentAndPost, $PostInterval);
+      });
     });
   } else {
     notifyQueueUpdate();
@@ -96,18 +124,32 @@ function dequeueCommentAndPost() {
 }
 
 function restoreSettings() {
+  // テキスト
   for (var name of ['email', 'password', 'broadcast-id', 'url']) {
     var value = window.localStorage.getItem(name);
     if (value !== null) {
       $('#' + name + '-input').val(value);
     }
   }
+  // チェックボックス
+  for (var name of ['nickname']) {
+    var value = window.localStorage.getItem(name);
+    if (value !== null && value !== "false") {
+      $('#' + name + '-checkbox').prop('checked', true);;
+    }
+  }
 }
 
 function saveSettings() {
+  // テキスト
   for (var name of ['email', 'password', 'broadcast-id', 'url']) {
     var value = $('#' + name + '-input').val();
     window.localStorage.setItem(name, value);
+  }
+  // チェックボックス
+  for (var name of ['nickname']) {
+    var value = $('#' + name + '-checkbox').prop('checked');
+    window.localStorage.setItem(name, ""+value);
   }
 }
 

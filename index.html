@@ -6,36 +6,40 @@
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
-    <div class="container">
-      <h4>ニコ動ログイン情報 <button id="hide-button"></button></h4>
-      <div id="login-info">
-        <div>
-          <label>EMail </labeL>
-          <input id="email-input" type="text">
-        </div>
-        <div>
-          <label>パスワード </label>
-          <input id="password-input" type="password">
-        </div>
-      </div>
-
-      <h4>転載元</h4>
+    <h4>ニコ動ログイン情報 <button id="hide-button"></button></h4>
+    <div id="login-info">
       <div>
-        <label>放送ID </label>
-        <input id="broadcast-id-input" type="text">
+        <label class="left-label">EMail </labeL>
+        <input id="email-input" type="text">
       </div>
-
-      <h4>投稿先</h4>
       <div>
-        <label style="vertical-align: top">スレッドURL </label><br>
-        <input type="url" id="url-input" style="width: 100%">
-        <!-- <textarea style="width: 180px" id="url-input" rows=3></textarea> -->
-        <!--
-        <span>ほにゃららのふがふが (500)</span>
-        <button>新スレに移動</button> -->
-        <!-- 実装しないかもね -->
+        <label class="left-label">パスワード </label>
+        <input id="password-input" type="password">
       </div>
+    </div>
 
+    <h4>転載元</h4>
+    <div>
+      <label class="left-label">放送ID </label>
+      <input id="broadcast-id-input" type="text">
+    </div>
+
+    <h4>投稿先</h4>
+    <div>
+      <label class="left-label" style="vertical-align: top">スレッドURL </label><br>
+      <input type="url" id="url-input" style="width: 100%">
+      <!-- <textarea style="width: 180px" id="url-input" rows=3></textarea> -->
+      <!--
+           <span>ほにゃららのふがふが (500)</span>
+           <button>新スレに移動</button> -->
+      <!-- 実装しないかもね -->
+    </div>
+
+    <div>
+      <label>
+        <input type="checkbox" id="nickname-checkbox" title="184の付いていないコメントの先頭に「＠ユーザー名」の形でユーザー名を表示します。">
+        コテハンを表示する
+      </label>
     </div>
 
     <div>
@@ -44,29 +48,29 @@
       <span id="status-message"></span>
     </div>
     <hr>
-    <div style="font-size: smaller">
-        <div>
-            <label class="stat-label">放送</label>
-            <span id="live-name"></span><br>
-            <label class="stat-label">部屋</label>
-            <span id="room-name"></span><br>
-        </div>
-        <div>
-            <label class="stat-label" title="投稿先したらば掲示板スレッドのタイトルです。">スレッド</label>
-            <span id="shitaraba-thread-title"></span><br>
-        </div>
-        <div>
-            <label class="stat-label" title="受信したコメントの数です。">受信</label>
-            <span id="stats-received"></span><br>
-            <label class="stat-label" title="まだ投稿されていない受信したコメントの数です。">送信待ち</label>
-            <span id="queue-length"></span><br>
-            <label class="stat-label" title="コマンドなので投稿されなかったコメントの数です。">コマンドコメ</label>
-            <span id="stats-filtered"></span><br>
-            <label class="stat-label" title="掲示板への投稿が成功したレスの数です。複数のコメントが1つのレスにまとめられることもあります。">送信済み</label>
-            <span id="stats-sent"></span><br>
-            <label class="stat-label" title="投稿に失敗したレスの数です。">送信エラー</label>
-            <span id="stats-errored"></span><br>
-        </div>
+    <div id="stats-div" style="font-size: smaller">
+      <div>
+        <label class="stat-label">放送</label>
+        <span id="live-name"></span><br>
+        <label class="stat-label">部屋</label>
+        <span id="room-name"></span><br>
+      </div>
+      <div>
+        <label class="stat-label" title="投稿先したらば掲示板スレッドのタイトルです。">スレッド</label>
+        <span id="shitaraba-thread-title"></span><br>
+      </div>
+      <div>
+        <label class="stat-label" title="受信したコメントの数です。">受信</label>
+        <span id="stats-received"></span><br>
+        <label class="stat-label" title="まだ投稿されていない受信したコメントの数です。">送信待ち</label>
+        <span id="queue-length"></span><br>
+        <label class="stat-label" title="コマンドなので投稿されなかったコメントの数です。">コマンドコメ</label>
+        <span id="stats-filtered"></span><br>
+        <label class="stat-label" title="掲示板への投稿が成功したレスの数です。複数のコメントが1つのレスにまとめられることもあります。">送信済み</label>
+        <span id="stats-sent"></span><br>
+        <label class="stat-label" title="投稿に失敗したレスの数です。">送信エラー</label>
+        <span id="stats-errored"></span><br>
+      </div>
     </div>
 
     </div>
